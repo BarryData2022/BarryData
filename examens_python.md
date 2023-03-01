@@ -1,0 +1,262 @@
+# Decorator 
+
+- # **Content**
+    1. ## Introduction
+    2. ## Definition 
+    3. ## Simple Example  
+    4. ## Parameterized Decorators
+    5. ## Wrap a function
+    6. ## Wrap functions
+  
+  
+
+
+
+
+
+
+   
+            
+1. ## Introduction:
+
+decorators are nothing more or less than functions to modify the behavior of other functions and/or to execute additional code.
+Thus, rather than stupidly copying and pasting code in order to slightly modify the behavior of a function, Python offers you to avoid code repetition, thus reducing code maintenance problems via the possibility of creating functions from higher order.
+Decorators are considered, in Python, as a fairly advanced concept. The ability to pass as a parameter, to a function, to another function, does not necessarily seem automatic or natural in procedural or object programming.
+However, this is what the decorators will allow us to do: via a function, manipulate other functions (both in input and output) and possibly impact their behavior. To do this, simply pass the name of the function to be handled (without the “()”) like any other parameter.
+On the application side, this can be very useful for having intelligent code that can adapt to various environments, generate code execution logs
+
+2. ## Definiton:
+
+A decorator is a function that modifies the behavior of other functions.
+Decorators are useful when you want to add the same code to several existing functions.
+The decorator mechanism - somewhat reminiscent, to those who know, of Lisp macros - is a very powerful mechanism. Its scope goes far beyond simply adding code before and after a function.
+For example, the notions of class methods (````@classmethod````) and static methods (````@staticmethod````) are implemented as decorators. For a more representative list of what it is possible to do with decorators, I invite you to even quickly browse this[ collection of decorators](https://wiki.python.org/moin/PythonDecoratorLibrary) which offers code (for information only, because none of this is part of the standard library) for themes that are conducive to decorating code.
+We will see some of these examples in detail.
+
+3. ### Example :
+````
+def mon_decorateur(fonction):
+    print(fonction.__name__ + ' appelée')
+    return fonction()
+
+def ma_fonction():
+    print("hello_world")
+
+if __name__ == "__main__":
+    mon_decorateur(ma_fonction)
+````
+Here is a simplified example of a decorator. In the code above, we call our decoration function "```` my_decorator()````" by passing it a function as argument: my_function(). Compared to the function alone (Editor's note: my_function), we execute additional code and therefore modify
+the behavior of the function. We are therefore in the presence of a decorator.  
+In fact, we are not changing the behavior of the function code in any way, since we are not touching it. It is at the level of the function call that everything is played and it will be the final result that will be impacted.  
+However this has the disadvantage that you have to call the decorator and not the function each time you need this extra functionality.  
+Python makes it possible to simplify this writing via a syntax dedicated to decorators, which is declared with the "@".
+````
+def mon_decorateur(fonction):
+    print(fonction.__name__ + ' appelée')
+    return fonction
+
+@mon_decorateur
+def ma_fonction():
+    print("hello_world")
+
+if __name__ == "__main__":
+    ma_fonction()
+````
+And There you go. If a_decorer is True, then our decorator will play its part. But if a_decorer is False, then we get our standard function back. To switch from a debug version that requires the function call log to a distribution version, you just need to change this value.  
+This is what the basic operation of a decorator is based on.
+
+### Example 2:
+
+````
+def decorator(f): # decorator est un décorateur
+  print(f.__name__)
+  return f
+````
+To apply a decorator, precede the definition line of the function to be decorated with a
+line with an @ then the name of the decorator to apply, for example:
+````
+>>> @decorator
+2 ... def addition(a, b):
+3 ... return a + b
+4 ...
+5 addition
+````
+This has the effect of replacing addition with the return of the decorator function called with
+addition as a parameter, which is strictly equivalent to:
+
+````
+def addition(a, b):
+    return a + b
+addition = decorator(addition)
+````
+So we can clearly see that the decorator is applied when the function is defined,
+and not during his calls. Here we use a very simple decorator that returns the same
+function, but it could very well return another one, which would for example be created at
+the fly.  
+
+Let's say we would like to modify our addition function to display the operands and then
+the result, without touching the body of our function. We can make a decorator
+which will return a new function responsible for displaying the parameters, calling our
+original function, then display the return and return it (in order to keep the behavior
+original).  
+
+Thus, our decorator becomes:
+````
+ def print_decorator(function):
+   def new_function(a, b): # New function behaving like the function to decorate
+       print(f"Addition des nombres {a} et {b}")
+       ret = function(a, b) # Call of the original function
+       print(f"Retour: {ret}")6       return ret
+   return new_function # Don't forget to return our new function
+````
+If we now apply this decorator to our addition function:
+````
+1 >>> @print_decorator
+2 ... def addition(a, b):
+3 ... return a + b
+4 ...
+5 >>> addition(1, 2)
+6 Addition of numbers 1 and 2
+7 Return 3
+  3
+````
+But our decorator here is very specialized, it only works with functions that take two
+parameters, and will display "Addition" in any case. We can modify it to make it
+more generic (remember *args and **kwargs).
+````
+def print_decorator(function):
+    def new_function(*args, **kwargs):
+        print('Appel de la fonction {} avec args={} et kwargs={}'.format(function.__name__, args, kwargs))
+        ret = function(*args, **kwargs)
+        print('Retour: {}'.format(ret))
+        return ret
+    return new_function
+````
+I let you try it on different functions to realize its genericity.  
+Function definitions are not limited to a single decorator: it is possible to
+specify as many as you want, placing them one after the other.
+
+````
+@decorator
+@print_decoration
+def useless():
+    pass
+````
+The order in which they are specified is important, the preceding code is equivalent to:  
+````
+def useless():
+    pass
+useless = decorator(print_decorator(useless))
+````
+So we see that the decorators specified first are the ones that will be applied last.
+
+I said above that decorators apply to functions. This is also valid for
+functions defined inside classes (i.e. methods). But finally know that the
+decorators extend to class declarations.
+````
+@print_decorator
+class MyClass:
+    @decorator
+    def method(self):
+        pass
+````
+
+4. ## Parameterized Decorators:
+
+We've seen how to apply a decorator to a function, however we might want to
+configure the behavior of this decorator. In our previous example (print_decorator), we display text before and after the function call. But what if we wish
+modify this text (to change the language, use a term other than "function")?
+
+We don't want to have to create a different decorator for every possible sentence and
+imaginable. We would like to be able to pass our strings to our decorator to
+that he takes care of posting them at the appropriate time.
+
+In fact, @ does not have to be followed by an object name, arguments can also
+append to it using parentheses (as you would for a call). But the behavior
+may seem strange to you at first.
+
+For example, to use such a parameterized decorator:
+````
+@param_print_decorator('call {} with args({}) and kwargs({})','ret={}')
+    def test_func(x):
+        return x
+````
+We will need to have a callable param_print_decorator which, when called, will return a decorator which can then be applied to our function. A parameterized decorator
+is thus only a callable returning a simple decorator.
+
+The code for param_print_decorator would look like this:
+````
+def param_print_decorator(before, after): # Parameterized Decorator
+        def decorator(function): # Décorateur
+            def new_function(*args, **kwargs): # Function that will replace our decorated function
+                print(before.format(function.__name__, args, kwargs))
+                ret = function(*args, **kwargs)
+                print(after.format(ret))
+                return ret
+        return new_function
+    return decorator
+````
+5. ## Wrap a function:
+
+A function is not just a piece of code with parameters. It is also a name
+names, with those of the parameters), documentation (docstring), annotations, etc. When
+we decorate a function at the current time (in cases where we return a new one),
+we lose all this ancillary information.
+
+An example to show us this:
+````
+>>> def decorator(f):
+...     def decorated(*args, **kwargs):
+...         return f(*args, **kwargs)
+...     return decorated
+...
+>>> @decorator
+... def addition(a: int, b: int) -> int:
+...
+        "This function adds the parameters `a` and `b`"
+...     return a + b
+...
+>>> help(addition)
+ Help on function decorated in module __main__:
+
+decorated(*args, **kwargs)
+````
+So what do we see? Not much. The name that appears is that of decorated, the parameters
+are *args and **kwargs (without annotations), and we also lost our docstring. As much
+say that there is nothing left to understand what the function does.
+
+6. ## Wrap functions:
+
+Earlier in this course, I told you about the functools module. He hasn't revealed to us yet
+all its mysteries.
+
+We will focus here on the update_wrapper and wraps functions. These functions will
+allow us to copy information from one function to a new one.
+
+update_wrapper takes as first parameter the function to add the information to and
+the one from which to draw them second. To return to our previous example, we would need
+````
+import functools
+
+def decorator(f):
+    def decorated(*args, **kwargs):
+        return f(*args, **kwargs)
+    functools.update_wrappers(decorated, f) # We copy the information from `f` into `decorated`
+    return decorated
+````
+But another function will be much more useful to us because it is more concise, and recommended by the Python documentation for this case. These are wraps, which return a decorator when called with a function.
+
+The wraps decorated function will take information from the function passed to the wraps call.
+Thus, we will only have to precede all our decorated functions with @functools.wraps(fonction_a_decorer). In our example:
+
+````
+import functools
+
+def decorator(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        return f(*args, **kwargs)
+    return decorated
+````
+
+
