@@ -7,6 +7,7 @@
     4. ## Parameterized Decorators
     5. ## Wrap a function
     6. ## Wrap functions
+    7. ## Conclusion
   
   
 
@@ -17,7 +18,7 @@
 
    
             
-1. ## Introduction:
+## 1. Introduction:
 
 decorators are nothing more or less than functions to modify the behavior of other functions and/or to execute additional code.
 Thus, rather than stupidly copying and pasting code in order to slightly modify the behavior of a function, Python offers you to avoid code repetition, thus reducing code maintenance problems via the possibility of creating functions from higher order.
@@ -25,7 +26,7 @@ Decorators are considered, in Python, as a fairly advanced concept. The ability 
 However, this is what the decorators will allow us to do: via a function, manipulate other functions (both in input and output) and possibly impact their behavior. To do this, simply pass the name of the function to be handled (without the “()”) like any other parameter.
 On the application side, this can be very useful for having intelligent code that can adapt to various environments, generate code execution logs
 
-2. ## Definiton:
+## 2. Definiton:
 
 A decorator is a function that modifies the behavior of other functions.
 Decorators are useful when you want to add the same code to several existing functions.
@@ -33,7 +34,7 @@ The decorator mechanism - somewhat reminiscent, to those who know, of Lisp macro
 For example, the notions of class methods (````@classmethod````) and static methods (````@staticmethod````) are implemented as decorators. For a more representative list of what it is possible to do with decorators, I invite you to even quickly browse this[ collection of decorators](https://wiki.python.org/moin/PythonDecoratorLibrary) which offers code (for information only, because none of this is part of the standard library) for themes that are conducive to decorating code.
 We will see some of these examples in detail.
 
-3. ### Example :
+## 3. Example :
 ````
 def mon_decorateur(fonction):
     print(fonction.__name__ + ' appelée')
@@ -161,7 +162,7 @@ class MyClass:
         pass
 ````
 
-4. ## Parameterized Decorators:
+## 4. Parameterized Decorators:
 
 We've seen how to apply a decorator to a function, however we might want to
 configure the behavior of this decorator. In our previous example (print_decorator), we display text before and after the function call. But what if we wish
@@ -196,7 +197,7 @@ def param_print_decorator(before, after): # Parameterized Decorator
         return new_function
     return decorator
 ````
-5. ## Wrap a function:
+## 5. Wrap a function:
 
 A function is not just a piece of code with parameters. It is also a name
 names, with those of the parameters), documentation (docstring), annotations, etc. When
@@ -225,7 +226,7 @@ So what do we see? Not much. The name that appears is that of decorated, the par
 are *args and **kwargs (without annotations), and we also lost our docstring. As much
 say that there is nothing left to understand what the function does.
 
-6. ## Wrap functions:
+## 6. Wrap functions:
 
 Earlier in this course, I told you about the functools module. He hasn't revealed to us yet
 all its mysteries.
@@ -258,5 +259,11 @@ def decorator(f):
         return f(*args, **kwargs)
     return decorated
 ````
+## 7. Conclusion:
 
+As we have just seen, decorators are among the Python concepts that can quickly turn out to be very useful.
+
+Widely used by seasoned Python developers, decorators make it possible to obtain concise code, limiting repetitions to the strict minimum, without sacrificing significant readability.
+
+I hope that this introduction will have convinced you, and will allow you in the future to be even more efficient with Python.
 
