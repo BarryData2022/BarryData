@@ -1,4 +1,8 @@
-# Decorator 
+## Mamadou Alpha Barry Master1 Nov22 D.I.T
+
+---
+
+# Decorator:  
 
 - # **Content**
     1. ## Introduction
@@ -267,3 +271,8 @@ Widely used by seasoned Python developers, decorators make it possible to obtain
 
 I hope that this introduction will have convinced you, and will allow you in the future to be even more efficient with Python.
 
+- ## Documents consulted
+  -  [Python.org](https://wiki.python.org/moin/PythonDecoratorLibrary)
+  -  [Deusyss.developpez.com](https://deusyss.developpez.com/tutoriels/Programmation/Concepts_avances_decorateurs/)
+  -  [Fun mooc](https://www.fun-mooc.fr/fr/cours/python-3-des-fondamentaux-aux-concepts-avances-du-langage/)
+   
